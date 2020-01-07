@@ -1,0 +1,175 @@
+***********************************************************
+* COMP15 - FA2019                                         *
+* PROJECT 2                                               *
+* ELIZABETH HOM                                           *
+* 6 DEC 2019                                              *
+*                                                         *
+* README – proj2part2                                     *
+***********************************************************
+
+****************
+* Compile/run: *
+****************
+    - Compile gerp program using
+            "make" or "make gerp"
+    - run executable with
+            ./gerp directoryToIndex outputFile
+            where directoryToIndex is:
+                the starting directory that will be traversed and indexed, and
+                is a full path name (example: /comp/15/files).
+            outputFile is:
+                the name of the file that the query results will be printed to
+
+********************
+* Program Purpose: *
+********************
+
+The purpose of the program is to index and search a file tree for strings. gerp
+takes a starting directory, and indexes every word and relevant information
+(such as the file path, line number the word occurs on, etc.) within all files
+inside that directory into a hash table. Once the hash table has been created,
+the program responds to user queries (such as performing case insensitive and
+sensitive search, changing outputFile, or quitting the program).
+
+*********************
+* Acknowledgements: *
+*********************
+
+Project 2 would not have been possible without guidance from the awesome COMP15
+teaching assistants! Specifically, Lawrence Chan, Andrew Vu, and Alice Dempsey
+were incredibly helpful and fundamental to getting gerp working. I would also
+like to thank Viet Nguyen, Juliana Castillo, Era Iyer, and Daniel Mahoney for
+their helpful expertise throughout this project.
+
+**********
+* Files: *
+**********
+
+main.cpp:
+    Main driver for the program. Based on the starting directory the user
+    types on the command line, main.cpp builds the hash table data structure by
+    individually hashing every word in all files accessible from the starting
+    directory, and then continuously prompts for user commands to modify the
+    search and to quit the program.
+
+hashTable.cpp:
+    Implementation of hashTable class. Holds the hash table structure, as well
+    as functions related to the hash table, such as indexing words into the
+    hash table, searching for words (case sensitive and insensitive), etc.
+
+hashTable.h:
+    Interface of the hashTable class.
+
+FSTree.h:
+    Interface of the FSTree class. Uses a file-system tree to represent
+    directories, subdirectories, and files. The data structure is an n-ary
+    tree, and is primarily used to navigate through folders and directories
+    inside a computer. Contains functions related to the FSTree, such as 
+    constructing the FSTree, destructing it, and a function that returns the
+    root of the tree (DirNode class).
+
+DirNode.h:
+    Interface of the DirNode class. Is a building block for the FSTree class,
+    and is our representaton of folders. Every DirNode instance has a string
+    name, list of files in the directory, and a list of subdirectories.
+    DirNode.h contains both public and private functions regarding a node's
+    name, subdirectories, files, etc.
+
+Makefile:
+    Contains the code that builds ./gerp.
+
+***************************
+* Architectural Overview: *
+***************************
+
+The program gerp contains three classes: FSTree, DirNode, and hashTable. The
+FSTree class relates to the DirNode class because the FSTree is an n-ary tree
+consisting of DirNodes. Each DirNode is a building block of the FSTree class,
+and represents folders in the computer. hashTable uses the FSTree class to 
+obtain all the files accessible from the user given starting directory.
+Seeing as the FSTree contains all the subdirectories and files accessible from
+the starting directory, it also contains all the complete path names to every
+file within the directory; the full path names are used to open every file in
+an ifstream and index its contents into the hash table in the hashTable class.
+
+********************
+* Data Structures: *
+********************
+
+The program contains multiple levels of abstraction. The overall hash table is
+a one dimensional array named "table" (initially size 20011). Each slot in the
+array contains information about a word hashed from a file. Each word is hashed
+based on its all lowercase version (for example, the word "HeLlO" would be
+hashed as "hello"). Each slot in "table" contains a vector of pointers to
+Lowercase structs. A Lowercase struct contains a string of the lowercase
+version of the word and a vector of Permutation structs, which contains infor-
+mation about every permutation of the hashed lowercase word (for example, the
+indexed location for the hashed word "hello" may have permutations like
+"Hello," "heLLo," or "hElLo" stored). A Permutation struct contains a string
+that holds each permutation, and a vector of PathLine structs, which contains
+information about the file path and fileline of each permutation.
+
+The program has these levels of abstraction to make case insensitive and case
+sensitive search as efficient as possible. Because of the existence of
+the vector of Permutation structs, case insensitive search would just print
+out the entire contents of the vector to the output file, while case sensitive
+search would search through the array and only print the correct permutation's
+information to the output file.
+
+Initially, the structure of the program only contained a one dimensional table
+array and a vector of pointers to a Node struct that contained the case
+sensitive word string, file path name, and file line the word occurs on. While
+this worked for case sensitive searching, it failed to allow for case
+insensitive searching, as there was no way for the program to know if "hello"
+was equal to "HeLlo," as these two strings were hashed to separate indexes in
+the hash table, rather than being hashed to the same one. As such, case insen-
+sitive search made the program far more inefficient, as the program was making
+new nodes in the table a lot more often than it needed to (compared to the
+current structure of the program). As such, the structure of the program was
+changed halfway to make case insensitive searching more efficient by adding
+more levels of abstraction through creating the Lowercase struct, Permutation
+struct, and PathLine struct structure.
+
+************
+* Testing: *
+************
+
+The program was extensively tested to ensure gerp's behavior was working as
+expected.
+
+GENERAL: The reference implementation was extensively tested to discover the
+exact behavior of gerp in different cases, such as case sensitive & insensitive
+seaching, changing the output file, queries that have nonAlphaNumeric trailing
+and leading characters, etc. Once gerp was compiling, the output from gerp was
+compared against the output from the reference implementation using the same
+commands (testing a variety of words in small and medium Gutenberg). Then, both
+output files containing the query results from gerp and the ref implementation
+were sorted using the "sort unsortedFile.txt > sortedFile.txt" command on both.
+The sorted files from gerp and the ref implementation were then compared
+using "diff sortedFile1.txt sortedFile2.txt". If there was a difference between
+the two, the specific query words that caused discrepancies would be examined
+in more detail, which ultimately resulted in closely analyzing the findWord()
+and findWordInsensitive() functions.
+
+TESTINGMAIN.CPP: testingMain.cpp was a testing file that was used to ensure
+that specific functions in hashTable.cpp were working as expected. This was
+helpful because it would isolate issues to specific functions, rather than
+running the entire main.cpp every time and being unsure which function was
+causing the issue.
+
+DEBUGGING: cerr statements were heavily used while debugging the program. The
+cerr statements were very helpful in determining whether all variables, values,
+and indexes were their expected values at all points in the program; if a value
+was not its expected value, then that line of the program would be interrogated
+in greater detail.
+
+MEMORY: Valgrind was heavily relied upon for testing regarding memory. A major
+problem encountered during the process of writing the program was a
+segmentation fault that occurred when indexing larger data sets like small,
+medium, and large Gutenberg. Running valgrind would point to specific functions
+or lines that were suspicious in causing the program to segmentation fault,
+which gave good starting places to fixing the segmentation fault. Ultimately,
+the segmentation fault was because of uninitialized string values in the
+stripnonAlphaNum function, which was figured out in part by the valgrind
+reports. Furthermore, valgrind was very helpful in discerning memory leaks, and
+if existed, their location.
