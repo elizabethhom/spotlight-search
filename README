@@ -5,6 +5,21 @@
 * README - SPOTLIGHT SEARCH "GERP"                        *
 ***********************************************************
 
+*******************************
+* Code Sample Important Note: *
+*******************************
+
+!!! Please refer to hashTable.cpp and main.cpp for files that best demonstrate
+Elizabeth Hom's programming skills and style.
+
+The Spotlight Search "Gerp" program serves to demonstrate Elizabeth Hom's
+ability in writing clear, well-documented, modular, and accurate code, and was
+her final project in COMP15: Data Structures. The program serves to showcase
+her ability in designing and implementing complex data structures with multiple
+levels of abstraction in working with very large directories (for example,
+the Gutenberg libraries), as well as key skills such as writing insertion and
+search algorithms.
+
 ****************
 * Compile/run: *
 ****************
@@ -30,21 +45,6 @@
         the following format:
             PathNameToFile:FileLineNumOfWord: FullTextOfLineWordAppearsOn
         unless the output file is changed using the command "@f". 
-
-*******************************
-* Code Sample Important Note: *
-*******************************
-
-!!! Please refer to hashTable.cpp and main.cpp for files that best demonstrate
-Elizabeth Hom's programming skills and style.
-
-The Spotlight Search "Gerp" program serves to demonstrate Elizabeth Hom's
-ability in writing clear, well-documented, modular, and accurate code, and was
-her final project in COMP15: Data Structures. The program serves to showcase
-her ability in designing and implementing complex data structures with multiple
-levels of abstraction in working with very large directories (for example,
-the Gutenberg libraries), as well as key skills such as writing insertion and
-search algorithms.
 
 ********************
 * Program Purpose: *
