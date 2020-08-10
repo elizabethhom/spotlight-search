@@ -1,14 +1,13 @@
-/********************************************
-* COMP15 - FA2019
-* PROJECT 2
-* ELIZABETH HOM
-* 6 DEC 2019
-* 
-* hashTable.h
-*
-* hashTable interface - class interface for
-* the hashTable class
-*********************************************/
+/*
+ * hashTable.h
+ * 
+ * COMP15 - FALL2019
+ * Elizabeth Hom (ehom01)
+ * Last Modified: December 6, 2019
+ * 
+ * Purpose: Interface of the hashTable class, which oversees the hash table
+ *          structure and its relevant functions.
+ */
 
 #include <iostream>
 #include <string>
@@ -24,60 +23,83 @@ class hashTable
 {
     private:
 
+       /*
+        * PathLine
+        *
+        * Contains full path name to file containin the permutation and
+        * line number the permutation appears on within the file.
+        */
         struct PathLine {
-            string path;                // full path name of the permutation
-            int fileLine;               // fileLine the permutation appears on
+            string path;
+            int fileLine;
         };
 
+       /*
+        * Permutations
+        *
+        * Contains permutation of a word and a vector of PathLine structs
+        * associated with the permutation.
+        */
         struct Permutations {
-            string wordPerm;            // permutation of the word
-            vector<PathLine> pathLine;  // vector of PathLine structs
-        };                              // associated with the permutation
+            string wordPerm;
+            vector<PathLine> pathLine;
+        };
 
+       /*
+        * Lowercase
+        *
+        * Contains lowercase version of word being hashed and vector of
+        * Permutation structs where each permutation is a different
+        * configuration of the word's capitalization.
+        */
         struct Lowercase {
-            string wordLower;           // lowercase version of word hashed
-            vector<Permutations> perm;  // vector of Permutation structs where
-        };                              // a permutation is a different config.
-                                        // of the word's capitalization
+            string wordLower;
+            vector<Permutations> perm;
+        };
+
         int tableSize;
-        vector<Lowercase*> *table;      // hash table structure: 1d array that
-                                        // has pointers to Lowercase structs
+        
+       /* Hash table structure: 1D array that contains pointers to
+        * Lowercase structs
+        */
+        vector<Lowercase*> *table;
+
     public:
 
-        // constructor
+        // Constructor
         hashTable();
 
-        // destructor
+        // Destructor
         ~hashTable();
 
-        // hashes word into the hash table
+        // Hashes word into the hash table
         void hashWord(string lower, string orig, int fileLine, string filePath,
                       int numElem);
 
-        // searches for word, either case sensitive or insensitive
+        // Searches for word (Case sensitive & insensitive)
         void findWord(string queryWord, ofstream &output);
         void findWordInsensitive(string queryWord, ofstream &output);
 
-        // returns true if word already exists in table
+        // Returns true if word already exists in table
         bool foundWord(string queryWord, size_t wordKey);
 
-        // returns hash function value of word
+        // Returns hash function value of word
         int getKey(string queryWord);
 
-        // returns full line text of a specified word
+        // Returns full line text of a specified word
         string getLineText(string path, int fileLine);
 
-        // returns lowercase version of a string
+        // Returns lowercase version of a string
         string lowercase(string word);
 
-        // expands the hashTable by 2.5 original size, if loadFactor >= 0.75
+        // Expands the hashTable by 2.5 original size, if loadFactor >= 0.75
         void expand();
         void checkLoadFactor(double numElem, double tableSize);
 
-        // helper function that returns an initialized PathLine struct
+        // Returns an initialized PathLine struct
         PathLine makePathLine(int fileLine, string filePath);
 
-        // inserts new word into the table with initialized struct values
+        // Inserts new word into the table with initialized struct values
         void insertNewWord(string lower, string orig, int fileLine, string filePath, int wordKey);
 };
 
