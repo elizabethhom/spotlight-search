@@ -1,3 +1,3 @@
 # spotlight-search
 
-## Compile & Run
+### Compile & Run
