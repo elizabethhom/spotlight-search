@@ -47,10 +47,6 @@ hashTable::hashTable()
     table = new vector<Lowercase*>[tableSize];
 }
 
-// destructor
-// parameters: none
-// does:       none
-
 /*
  * Destructor
  *
