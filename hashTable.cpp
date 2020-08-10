@@ -1,13 +1,14 @@
-/********************************************
-* COMP15 - FA2019
-* PROJECT 2
-* ELIZABETH HOM
-* 6 DEC 2019
-* 
-* hashTable.cpp
-*
-* hashTable implementation
-*********************************************/
+/*
+ * hashTable.cpp
+ * 
+ * COMP15 - FALL2019
+ * Elizabeth Hom (ehom01)
+ * Last Modified: December 6, 2019
+ * 
+ * Purpose: Implementation of the hashTable class oversees the hash table
+ *          structure and its relevant functions, such as indexing words
+ *          into the table, searching (case-sensitive and insensitive).
+ */
 
 #include <iostream>
 #include <string>
