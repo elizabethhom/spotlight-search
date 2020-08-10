@@ -21,18 +21,26 @@ using namespace std;
 
 static const int TABLESIZE = 20011;
 
-// hash function
-// parameters: a string key
-// does: returns a size_t index that corresponds with the passed in key
+/*
+ * hashFunction
+ *
+ * Parameters: Word to hash (string)
+ * Returns:    Index (size_t) that corresponds with the passed in key
+ * Does:       Returns hash index
+ */
 static size_t hashFunction(string key)
 {
     return std::hash<string>{}(key);
 }
 
-// constructor
-// parameters: none
-// does:       initializes table (hash table), sets initial hash tableSize
-//             to 20011
+
+/*
+ * Constructor
+ *
+ * Parameters: NA
+ * Returns:    NA
+ * Does:       Initializes hash table, sets hash table initial size to 20011
+ */
 hashTable::hashTable()
 {
     tableSize = TABLESIZE;
@@ -42,6 +50,14 @@ hashTable::hashTable()
 // destructor
 // parameters: none
 // does:       none
+
+/*
+ * Destructor
+ *
+ * Parameters: NA
+ * Returns:    NA
+ * Does:       Destroys heap memory associated with hash table.
+ */
 hashTable::~hashTable()
 {
     for(int i = 0; i < tableSize; i++) {
@@ -53,35 +69,39 @@ hashTable::~hashTable()
     delete [] table;
 }
 
-// function    hashWord
-// parameters: lowercase version of string being hashed, permutation of string,
-//             fileLine and filePath of word, and number of elements in hash
-//             table at that point
-// returns:    none
-// does:       hashes the word passed in (by its lowercase version). if the
-//             word does not yet exist in the hash table, a new node will be
-//             inserted into the table; if the word already exists, then
-//             information about the new permutation of the word will be added
-//             to the existing node
+/*
+ * hashWord
+ *
+ * Parameters: Lowercase word being hashed (string), permutation of word
+ *             (string), line number word appears on in file (int), path
+ *             to file (string), current number of hash table elements (int)
+ * Returns:    NA
+ * Does:       Hashes passed in lowercase word. If word does not yet exist
+ *             in hash table, new node is inserted into table. Otherwise,
+ *             new permutation's information is updated to existing node.
+ */
 void hashTable::hashWord(string lower, string orig, int fileLine, string
                          filePath, int numElem)
 {
     size_t key = hashFunction(lower) % tableSize;
     bool found = false;
 
-    // if lowercase ver. of word exists in table already:
+    // If lowercase word exists in table already
     if (foundWord(lower, key)) {
         for(int i = 0; i < (int) table[key].size(); i++) {
             if (table[key].at(i)->wordLower == lower) {
                 for(int j = 0; j < (int) table[key].at(i)->perm.size(); j++) {
                     if(table[key].at(i)->perm[j].wordPerm == orig) {
+                        /* If permutation of word found, then add PathLine
+                           struct inside permutations */
                         PathLine temp = makePathLine(fileLine, filePath);
                         table[key].at(i)->perm[j].pathLine.push_back(temp);
-                        found = true;   // if perm of word found, add
-                        return;         // PathLine struct inside perms
+                        found = true;
+                        return;
                     }
                 }
-                if (not found) {        // otherwise, add new perm struct
+                if (not found) {
+                    // Otherwise, add new perm struct
                     PathLine temp = makePathLine(fileLine, filePath);
                     Permutations permTemp;
                     permTemp.wordPerm = orig;
@@ -90,17 +110,23 @@ void hashTable::hashWord(string lower, string orig, int fileLine, string
                 }
             }
         }
-    } else // if word does not exist in table yet, insert new node
+    } else {
+        // If word does not exist in table yet, insert new node
         insertNewWord(lower, orig, fileLine, filePath, key);
+    }
 
-    checkLoadFactor(numElem, tableSize);    // check loadFactor after every
-}                                           // insertion
+    // Check loadFactor after each insertion
+    checkLoadFactor(numElem, tableSize);
+}
 
-// function    makePathLine
-// parameters: fileLine word occurs on, path to file
-// returns:    a filled PathLine struct
-// does:       creates a PathLine struct and fill struct with respective
-//             fileLine and filePath values
+/*
+ * makePathLine
+ *
+ * Parameters: line number word appears on in file (int), path
+ * Returns:    Populated PathLine struct
+ * Does:       Creates PathLine struct and poulates with respective
+ *             fileLine and filePath values.
+ */
 hashTable::PathLine hashTable::makePathLine(int fileLine, string filePath)
 {
     PathLine pathLine;
@@ -110,33 +136,41 @@ hashTable::PathLine hashTable::makePathLine(int fileLine, string filePath)
     return pathLine;
 }
 
-// function    insertNewWord
-// parameters: lowercase version of string being hashed, permutation of string,
-//             fileLine and filePath of word, word key of word (from hash fxn)
-// returns:    none
-// does:       allocates space for a new Lowercase node. fills relevant values
-//             in node, then pushes back into the overall hash table
+/*
+ * insertNewWord
+ *
+ * Parameters: lowercase word being hashed (string), permutation of word (string),
+ *             word's fileLine (int) and filePath (string), hash function key (int)
+ * Returns:    NA
+ * Does:       Allocates space for new Lowercase node and populates relevant
+ *             values in node. Pushes back into overall hash table.
+ */
 void hashTable::insertNewWord(string lower, string orig, int fileLine, string
                               filePath, int key)
 {
-    Lowercase *insertNode = new Lowercase;  // creates new Lowercase node
+    // Creates new Lowercase node
+    Lowercase *insertNode = new Lowercase;
     insertNode->wordLower = lower;
     PathLine temp = makePathLine(fileLine, filePath);
 
     Permutations permTemp;
     permTemp.wordPerm = orig;
 
-    permTemp.pathLine.push_back(temp);      // pushes back into hash table
+    // Push back into hash table
+    permTemp.pathLine.push_back(temp);
     insertNode->perm.push_back(permTemp);
     table[key].push_back(insertNode);   
 }
 
-// function    checkLoadFactor
-// parameters: number of elements currently in table, current tableSize
-// returns:    none
-// does:       checks the load factor of the hash table. if load factor exceeds
-//             0.75, calls expand() function, which increases the tableSize by
-//             5/2
+/*
+ * checkLoadFactor
+ *
+ * Parameters: current number of elements in table (double), total size of
+ *             table (double)
+ * Returns:    NA
+ * Does:       Checks load factor of the hash table. If load factor > 0.75,
+ *             calls expand(), which increases tableSize by 5/2.
+ */
 void hashTable::checkLoadFactor(double numElem, double tableSize)
 {
     double loadFactor = numElem / tableSize;
@@ -145,27 +179,34 @@ void hashTable::checkLoadFactor(double numElem, double tableSize)
         expand();
 }
 
-// function    findWord
-// parameters: word string being searched for, ofstream
-// returns:    none
-// does:       performs case sensitive search, prints appropriate message to
-//             output file based on whether the queryWord was found (if found,
-//             also prints the word's file path, line the word occurs on, and
-//             the full text of the line
+/*
+ * findWord
+ *
+ * Parameters: query word (string), output stream (ofstream)
+ * Returns:    NA
+ * Does:       Performs case sensitive search, prints appropriate query result
+ *             to output file depending on if word was found. If found, prints
+ *             word's full file path, line the word is found on, and full text
+ *             of the line. Otherwise, prints error message.
+ */
 void hashTable::findWord(string queryWord, ofstream &output)
 {
-    // search for lowercase version of word
+    // Search for lowercase version of word
     if (foundWord(lowercase(queryWord), getKey(lowercase(queryWord)))) {
         int key = getKey(lowercase(queryWord));
+        
         for(unsigned long i = 0; i < table[key].size(); i++) {
-            // if lowercase version of word found, search for specific perm
+            
+            // If lowercase version of word found, search for specific perm
             if (table[key].at(i)->wordLower == lowercase(queryWord)) {
                 int currPerm = table[key].at(i)->perm.size();
+                
                 for(int j = 0; j < currPerm; j++) {
-                    // if the perm found, print fileLine & path to outputfile
+                    // If perm found, print fileLine and path to outputfile
                     if (table[key].at(i)->perm[j].wordPerm == queryWord) {
                         Permutations *temp = &table[key].at(i)->perm[j];
                         int currPL = temp->pathLine.size();
+                        
                         for(int k = 0; k < currPL; k++) {
                             string path = temp->pathLine[k].path;
                             int fileLine = temp->pathLine[k].fileLine;
@@ -180,22 +221,26 @@ void hashTable::findWord(string queryWord, ofstream &output)
         output << queryWord + " Not Found. Try with @insensitive or @i.\n";
 }
 
-// function    findWordInsensitive
-// parameters: word string being searched for, ofstream
-// returns:    none
-// does:       performs case insensitive search, prints appropriate message to
-//             output file based on whether the queryWord was found (if found,
-//             also prints the word's file path, line the word occurs on, and
-//             the full text of the line
+/*
+ * findWordInsensitive
+ *
+ * Parameters: query word (string), output stream (ofstream)
+ * Returns:    NA
+ * Does:       Performs case insensitive search, prints appropriate query result
+ *             to output file depending on if word was found. If found, prints
+ *             word's full file path, line the word is found on, and full text
+ *             of the line. Otherwise, prints error message.
+ */
 void hashTable::findWordInsensitive(string queryWord, ofstream &output)
 {
-    // search for lowercase version of word
+    // Search for lowercase version of word
     if (foundWord(lowercase(queryWord), getKey(lowercase(queryWord)))) {
         int key = getKey(lowercase(queryWord));
 
         for(unsigned long i = 0; i < table[key].size(); i++) {
-            // if lowercase version of word found, print path & fileLine of all
-            // permutations
+            
+            /* If lowercase version of word found, print path & fileLine of all
+               permutations */
             if (table[key].at(i)->wordLower == lowercase(queryWord)) {
                 int currPerm = table[key].at(i)->perm.size();
                 for(int j = 0; j < currPerm; j++) {
@@ -215,12 +260,14 @@ void hashTable::findWordInsensitive(string queryWord, ofstream &output)
         output << queryWord + " Not Found.\n";
 }
 
-// function    foundWord
-// parameters: word string being searched for, the word's key index
-// returns:    boolean, true if queryWord already exists in the table, false
-//             if not
-// does:       searches the table at the word's index (from the hash function)
-//             and returns true if the word is found in the table, false if not
+/*
+ * foundWord
+ *
+ * Parameters: query word (string), hash table key (size_t)
+ * Returns:    True if queryWord exists in table. Otherwise, false.
+ * Does:       Searches table at word's hash table key index and returns boolean
+ *             value depending on if word was found.
+ */
 bool hashTable::foundWord(string queryWord, size_t key)
 {
     for(unsigned long i = 0; i < table[key].size(); i++) {
@@ -232,17 +279,20 @@ bool hashTable::foundWord(string queryWord, size_t key)
     return false;
 }
 
-// function    getLineText
-// parameters: file path, line in which the word appears on
-// returns:    string of full text of which the word appears on
-// does:       returns the full text of which the queryWord appears on
+/*
+ * getLineText
+ *
+ * Parameters: file path (string), line in file word found on (int)
+ * Returns:    String of full text of which word appears on
+ * Does:       Returns full text of line query word appears on.
+ */
 string hashTable::getLineText(string path, int fileLine)
 {
     string fullText = "";
     ifstream input;
     input.open(path);
 
-    for(int i = 0; i < fileLine; i++) {     // traverses file until reaches
+    for(int i = 0; i < fileLine; i++) {     // Traverses file until reaches
         getline(input, fullText);           // correct fileLine
     }
     input.close();
@@ -250,11 +300,13 @@ string hashTable::getLineText(string path, int fileLine)
     return fullText;
 }
 
-// function    getKey
-// parameters: word string being searched for
-// returns:    integer index of the word
-// does:       uses the hash function to return the integer index/key of the
-//             word being searched for
+/*
+ * getKey
+ *
+ * Parameters: word being searched for (string)
+ * Returns:    Integer index of word in hash table (int)
+ * Does:       Uses hash function to return integer index/key of queried word.
+ */
 int hashTable::getKey(string queryWord)
 {
     size_t key = hashFunction(queryWord);
@@ -263,34 +315,46 @@ int hashTable::getKey(string queryWord)
     return key;
 }
 
-// function    expand
-// parameters: none
-// returns:    none
-// does:       expands the size of existing table to 5/2 of its original
-//             size and rehashes all the existing information in the table
-//             into the new table
+/*
+ * expand
+ *
+ * Parameters: NA
+ * Returns:    NA
+ * Does:       Expands size of table to 5/2 of current size and rehashes all
+ *             existing contents into new table.
+ */
 void hashTable::expand()
 {
     int newSize = tableSize * 5/2;
-    vector<Lowercase*> *temp = new vector<Lowercase*>[newSize]; // allocates new
-                                                                // vector
+    // Allocates new vector
+    vector<Lowercase*> *temp = new vector<Lowercase*>[newSize];
+
+    // Rehashes old table into new table
     for (int i = 0; i < tableSize; i++) {
         for (unsigned long j = 0; j < table[i].size(); j++) {
-            size_t key = hashFunction(table[i].at(j)->wordLower);  // rehashes
-            key = key % (tableSize * 5/2);                         // old table
-            temp[key].push_back(table[i].at(j));                   // into new
-        }                                                          // table
+            size_t key = hashFunction(table[i].at(j)->wordLower);
+            key = key % (tableSize * 5/2);
+            temp[key].push_back(table[i].at(j));
+        }
     }
     delete [] table;
 
     table = temp;
-    tableSize = tableSize * 5/2;    // update tableSize
+    tableSize = tableSize * 5/2;    // Update tableSize
 }
 
 // function    lowercase
 // parameters: a word string
 // returns:    the lowercase version of the passed in string
 // does:       converts the passed in string to all lowercase
+
+/*
+ * lowercase
+ *
+ * Parameters: word (string)
+ * Returns:    Lowercase version of passed in word
+ * Does:       Converts word to all lowercase.
+ */
 string hashTable::lowercase(string word)
 {
     string wordLower = "";
