@@ -1,6 +1,6 @@
 # spotlight-search
 
-Given a starting directory, traverses and indexes every word within the file tree into a database. Allows the user to query the database (case sensitive and insensitive) and prints query results accordingly. Written as a final project for Tufts University's Data Structures Course in Fall 2019.
+Given a starting directory, traverses and indexes every word within the file tree into a database. Allows the user to query the database (case sensitive and insensitive) and prints query results accordingly. Written as a final project for Tufts University's Data Structures Course in Fall 2019. For best code samples, visit [hashTable.cpp](https://github.com/elizabethhom/spotlight-search/blob/master/hashTable.cpp) and [main.cpp](https://github.com/elizabethhom/spotlight-search/blob/master/main.cpp).
 
 ### Compile & Run
 * Compile program using "make"
