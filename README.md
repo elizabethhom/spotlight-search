@@ -24,7 +24,7 @@ These nesting data structures were designed to allow for efficient case insensit
 
 ### Files
 * main.cpp: Main driver for the program. Given a starting directory to search within on the command line, main.cpp builds a hash table data structure (see *Program Architecture*) by individually indexing and saving every word, its path, and line number within all files in the file tree. Once built, *spotlight-search* continuously prompts the user for commands to modify or quit the search and prints the query results to the output file specified on the command line.
-* hashTable.cpp: Implementation of the hashTable class oversees the hash table structure and its relevant functions, such as indexing words into the table, searching (case-sensitive and insensitive).
+* hashTable.cpp: Implementation of the hashTable class. Oversees the hash table structure and its relevant functions, such as indexing words into the table, searching (case-sensitive and insensitive).
 * hashTable.h: Interface of the hashTable class.
 * FSTree.h: Interface of the FSTree class, provided by COMP15 staff. Uses a file-system tree to represent directories, subdirectories, and files.
 * DirNode.h: Interface of the DirNode class, provided by COMP15 staff. Building block for the FSTree class and represents folders.
